@@ -1,57 +1,64 @@
-# darling_chatbot.py
+from chatterbot import ChatBot
+from chatterbot.trainers import ChatterBotCorpusTrainer
+import tkinter as tk
+from tkinter import scrolledtext
+from tkinter import messagebox
 
-import datetime
+# Create chatbot instance
+chatbot = ChatBot("Darling")
 
-class DarlingChatbot:
-    def __init__(self, name="Darling"):
-        self.name = name
-        self.user_name = None
-        self.chat_log = []
+# Train chatbot with English corpus
+trainer = ChatterBotCorpusTrainer(chatbot)
+trainer.train("chatterbot.corpus.english")
 
-    def greet_user(self):
-        print(f"{self.name}: Hi, sweetheart! What’s your name?")
-        self.user_name = input("You: ").strip()
-        print(f"{self.name}: Aww, {self.user_name}, that’s such a cute name!")
+# GUI Application
+class DarlingChatbotApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Darling Chatbot")
+        self.root.geometry("500x550")
+        self.root.resizable(False, False)
 
-    def chat(self):
-        print(f"{self.name}: I'm here to make your day better! Type 'bye' to exit.")
-        while True:
-            user_input = input(f"{self.user_name}: ")
-            self.chat_log.append((self.user_name, user_input))
+        # Header
+        header = tk.Label(root, text="Darling Chatbot 💬", font=("Helvetica", 16, "bold"), pady=10)
+        header.pack()
 
-            if user_input.lower() in ['bye', 'exit']:
-                print(f"{self.name}: Bye bye, {self.user_name} ❤️. I’ll miss you!")
-                break
-            else:
-                response = self.generate_response(user_input)
-                print(f"{self.name}: {response}")
-                self.chat_log.append((self.name, response))
+        # Chat window
+        self.chat_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=60, height=20, font=("Arial", 12))
+        self.chat_area.pack(padx=10, pady=5)
+        self.chat_area.config(state=tk.DISABLED)
 
-    def generate_response(self, user_input):
-        user_input = user_input.lower()
+        # User input
+        self.entry = tk.Entry(root, width=40, font=("Arial", 12))
+        self.entry.pack(pady=10, padx=10, side=tk.LEFT, expand=True, fill=tk.X)
+        self.entry.bind("<Return>", self.send_message)
 
-        if "love" in user_input:
-            return "Love is in the air! Especially when you're around 💖"
-        elif "sad" in user_input:
-            return "Oh no, I'm here for you always. Want a virtual hug? 🤗"
-        elif "joke" in user_input:
-            return "Why did the computer get cold? Because it left its Windows open! 😄"
-        elif "miss you" in user_input:
-            return "I miss you too, like the moon misses the stars at sunrise 🌙✨"
-        elif "hello" in user_input or "hi" in user_input:
-            return "Hey cutie! What's on your mind today? 😊"
-        else:
-            return "Tell me more, darling 💬"
+        # Send button
+        send_button = tk.Button(root, text="Send", command=self.send_message, font=("Arial", 12), bg="lightblue")
+        send_button.pack(pady=10, padx=10, side=tk.RIGHT)
 
-    def save_chat_log(self):
-        filename = f"chat_log_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-        with open(filename, 'w') as f:
-            for speaker, line in self.chat_log:
-                f.write(f"{speaker}: {line}\n")
-        print(f"{self.name}: I saved our little chat in {filename} 💾")
+    def send_message(self, event=None):
+        user_input = self.entry.get().strip()
+        if not user_input:
+            messagebox.showwarning("Empty Input", "Please type a message.")
+            return
 
+        self.chat_area.config(state=tk.NORMAL)
+        self.chat_area.insert(tk.END, "You: " + user_input + "\n")
+
+        try:
+            response = chatbot.get_response(user_input)
+            self.chat_area.insert(tk.END, "Darling: " + str(response) + "\n\n")
+        except Exception as e:
+            self.chat_area.insert(tk.END, "Darling: Sorry, I couldn't process that.\n\n")
+
+        self.chat_area.config(state=tk.DISABLED)
+        self.entry.delete(0, tk.END)
+        self.chat_area.see(tk.END)
+
+# Run the app
 if __name__ == "__main__":
-    bot = DarlingChatbot()
-    bot.greet_user()
-    bot.chat()
-    bot.save_chat_log()
+    root = tk.Tk()
+    app = DarlingChatbotApp(root)
+    root.mainloop()
+
