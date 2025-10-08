@@ -14,7 +14,6 @@ It’s built completely with **vanilla HTML, CSS, and JavaScript**, with no exte
 You can open the chatbot directly in your browser after downloading the file:  
 👉 **[darling_chatbot.html](./darling_chatbot.html)**  
 
-
 ---
 
 ## ✨ Features  
