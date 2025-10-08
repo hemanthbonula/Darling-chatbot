@@ -50,5 +50,5 @@ You can open the chatbot directly in your browser after downloading the file:
 
 ### 1️⃣ Clone or Download the Repository  
 ```bash
-git clone https://github.com/your-username/darling-chatbot.git
+git clone https://github.com/hemanthbonula/darling-chatbot.git
 cd darling-chatbot
